@@ -1,0 +1,35 @@
+<div class="panel panel-default panel-intro">
+    <div class="panel-heading">
+        <div class="panel-lead"><em>退款详情 (已处理)</em></div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped">
+            <tbody>
+                <tr>
+                    <td width="20%">订单编号</td>
+                    <td>{$row.order_no}</td>
+                </tr>
+                <tr>
+                    <td>订单状态</td>
+                    <td><span class="label label-success">{$row.order_status_text}</span></td>
+                </tr>
+                <tr>
+                    <td>退款金额</td>
+                    <td><strong class="text-danger">¥{$row.paid_amount}</strong></td>
+                </tr>
+                <tr>
+                    <td>退款原因</td>
+                    <td>{$row.refund_reason|default='未填写'}</td>
+                </tr>
+                <tr>
+                    <td>审核备注</td>
+                    <td><div class="well well-sm">{$row.admin_remark|default='无'}</div></td>
+                </tr>
+                <tr>
+                    <td>退款时间</td>
+                    <td>{:date('Y-m-d H:i:s', $row.refund_time)}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

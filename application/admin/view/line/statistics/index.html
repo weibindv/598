@@ -1,0 +1,135 @@
+<style>
+    .panel-statistics { background: #f4f6f8; padding: 15px; }
+    .stat-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+    .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .stat-title { font-size: 16px; font-weight: bold; color: #333; }
+    
+    /* Module 1 overview style */
+    .overview-tabs { display: flex; gap: 20px; margin-bottom: 20px; }
+    .overview-tab { cursor: pointer; color: #999; font-weight: 500; }
+    .overview-tab.active { color: #333; position: relative; }
+    .overview-tab.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 20px; height: 3px; background: #ffba00; border-radius: 2px; }
+    
+    .overview-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; }
+    .overview-item { background: #f9f9f9; border-radius: 10px; padding: 15px; display: flex; align-items: center; gap: 12px; }
+    .overview-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 20px; }
+    .overview-info { flex: 1; }
+    .overview-info .value { font-size: 18px; font-weight: bold; display: block; color: #333; }
+    .overview-info .label { font-size: 12px; color: #999; }
+    .overview-info .diff { font-size: 10px; margin-top: 2px; }
+    .diff.up { color: #52c41a; }
+    .diff.down { color: #ff4d4f; }
+
+    /* Right side cards */
+    .revenue-value { font-size: 32px; font-weight: bold; color: #1890ff; margin: 10px 0; }
+    .user-value { font-size: 36px; font-weight: bold; color: #1890ff; text-align: center; margin: 20px 0; }
+    
+    /* Table styles */
+    .trend-table, .hot-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 10px; }
+    .trend-table th, .hot-table th { background: #fef5e7; padding: 12px; text-align: center; color: #666; font-weight: 500; }
+    .trend-table td, .hot-table td { padding: 12px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+    
+    .progress-bar-custom { height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden; display: inline-block; width: 60px; vertical-align: middle; margin-left: 5px; }
+    .progress-inner { height: 100%; background: #faad14; }
+</style>
+
+<div class="panel panel-default panel-intro panel-statistics">
+    <div class="panel-body">
+        <div class="row">
+            <!-- Left Side -->
+            <div class="col-md-9">
+                <!-- Module 1: Overview -->
+                <div class="stat-card">
+                    <div class="overview-tabs">
+                        <span class="overview-tab active" data-type="today">今日</span>
+                        <span class="overview-tab" data-type="week">本周</span>
+                        <span class="overview-tab" data-type="month">本月</span>
+                    </div>
+                    <div class="overview-grid" id="overview-content">
+                        <!-- Content will be loaded by JS -->
+                    </div>
+                </div>
+
+                <!-- Module 3: Order Trend -->
+                <div class="stat-card">
+                    <div class="stat-title">订单趋势</div>
+                    <table class="trend-table">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>订单数</th>
+                                <th>成交金额</th>
+                                <th>下单用户</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trend-content"></tbody>
+                    </table>
+                </div>
+
+                <!-- Module 5: Hot Goods -->
+                <div class="stat-card">
+                    <div class="stat-title">热门商品排行</div>
+                    <table class="hot-table">
+                        <thead>
+                            <tr>
+                                <th>排名</th>
+                                <th>商品名称</th>
+                                <th>销量</th>
+                                <th>销售金额</th>
+                                <th>占比</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hot-content"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Side -->
+            <div class="col-md-3">
+                <!-- Module 2: Revenue -->
+                <div class="stat-card">
+                    <div class="stat-title">总营收</div>
+                    <div class="revenue-value" id="revenue-total">¥ 0.00</div>
+                    <div style="background: #f0f7ff; padding: 10px; border-radius: 8px;">
+                        <span style="font-size: 12px; color: #666;">今日新增 <span id="revenue-today">¥ 0.00</span></span>
+                        <span id="revenue-diff" class="diff" style="float: right; font-size: 10px;"></span>
+                    </div>
+                </div>
+
+                <!-- Module 4: User Stats -->
+                <div class="stat-card">
+                    <div class="stat-title">总用户数</div>
+                    <div class="user-value" id="user-total">0</div>
+                    <div style="background: #f0f7ff; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                        <span style="font-size: 12px; color: #666;">今日新增 <span id="user-today">0</span></span>
+                        <span id="user-diff" class="diff" style="float: right; font-size: 10px;"></span>
+                    </div>
+                    <div style="background: #fff8e6; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 13px; color: #666;">近30天活跃用户数:</span>
+                        <span style="font-size: 20px; font-weight: bold; color: #1890ff;" id="user-active">0</span>
+                    </div>
+                </div>
+
+                <!-- Module 6: LINE Share Stats -->
+                <div class="stat-card">
+                    <div class="stat-title">LINE分享数据</div>
+                    <div style="margin-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="color: #999;">分享次数</span>
+                            <span style="font-weight: bold; color: #faad14;" id="share-num">0次</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span style="color: #999;">引流下单</span>
+                            <span style="font-weight: bold; color: #faad14;" id="share-order">0单</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #999;">转化率</span>
+                            <span style="font-weight: bold; color: #faad14;" id="share-rate">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

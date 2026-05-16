@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Login - Premium Experience</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        :root {
+            --line-green: #06C755;
+            --line-dark: #00B900;
+            --bg-dark: #121212;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: radial-gradient(circle at top right, #1a3a1a, transparent),
+                        radial-gradient(circle at bottom left, #0a1a0a, transparent),
+                        #121212;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            width: 72px;
+            height: 72px;
+            background: var(--line-green);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 0 20px rgba(6, 199, 85, 0.4);
+        }
+
+        .logo svg {
+            width: 40px;
+            fill: white;
+        }
+
+        .user-profile {
+            display: none;
+            margin-bottom: 24px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--line-green);
+            margin: 0 auto 16px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            gap: 12px;
+        }
+
+        .login-btn {
+            background-color: var(--line-green);
+            color: white;
+        }
+
+        .login-btn:hover {
+            background-color: var(--line-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(6, 199, 85, 0.3);
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            margin-top: 12px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .status-badge {
+            margin-top: 24px;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            display: none;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .debug-panel {
+            margin-top: 24px;
+            text-align: left;
+            background: #000;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-family: 'Monaco', monospace;
+            color: #00ff00;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="logo-box" class="logo">
+            <svg viewBox="0 0 24 24">
+                <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.778.039 1.085l-.171 1.027c-.052.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.891 2.572-5.792z"/>
+            </svg>
+        </div>
+
+        <div id="userProfile" class="user-profile">
+            <div id="userAvatar" class="avatar"></div>
+            <h1 id="userGreeting">Hello!</h1>
+            <p id="userSubtext">You are successfully connected.</p>
+        </div>
+
+        <div id="loginView">
+            <h1>LINE Login</h1>
+            <p>Welcome back! Please login with your LINE account to access our services.</p>
+            <button id="loginBtn" class="btn login-btn">
+                <span class="btn-text">Log in with LINE</span>
+                <div class="loading-spinner"></div>
+            </button>
+        </div>
+
+        <div id="loggedView" style="display: none;">
+            <button id="logoutBtn" class="btn logout-btn">Logout</button>
+        </div>
+
+        <div id="status" class="status-badge"></div>
+        <div id="debug" class="debug-panel"></div>
+    </div>
+
+    <script>
+        const LIFF_ID = "2010062669-bb6XES9o";
+        const BACKEND_URL = '/api/line.user/login';
+
+        const loginView = document.getElementById('loginView');
+        const loggedView = document.getElementById('loggedView');
+        const userProfile = document.getElementById('userProfile');
+        const userAvatar = document.getElementById('userAvatar');
+        const userGreeting = document.getElementById('userGreeting');
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = loginBtn.querySelector('.btn-text');
+        const spinner = loginBtn.querySelector('.loading-spinner');
+        const statusBadge = document.getElementById('status');
+        const debugPanel = document.getElementById('debug');
+        const logoBox = document.getElementById('logo-box');
+
+        function showStatus(message, isError = false) {
+            statusBadge.style.display = 'block';
+            statusBadge.textContent = message;
+            statusBadge.style.color = isError ? '#ff4d4d' : '#06C755';
+        }
+
+        function setLoading(isLoading) {
+            loginBtn.disabled = isLoading;
+            btnText.style.display = isLoading ? 'none' : 'block';
+            spinner.style.display = isLoading ? 'block' : 'none';
+        }
+
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: LIFF_ID });
+                if (liff.isLoggedIn()) {
+                    handleLoggedIn();
+                } else {
+                    loginBtn.addEventListener('click', () => liff.login());
+                }
+            } catch (err) {
+                console.error("LIFF Init failed", err);
+                showStatus("LIFF Initialization failed", true);
+            }
+        }
+
+        async function handleLoggedIn() {
+            setLoading(true);
+            loginView.style.display = 'none';
+            logoBox.style.display = 'none';
+            showStatus("Fetching LINE profile...");
+
+            try {
+                // 1. 获取本地 Profile 数据用于展示
+                const profile = await liff.getProfile();
+                console.log("LINE Profile:", profile);
+                
+                // 预填充部分 UI
+                userGreeting.textContent = `Hi, ${profile.displayName}!`;
+                if (profile.pictureUrl) userAvatar.style.backgroundImage = `url(${profile.pictureUrl})`;
+                
+                showStatus("Authenticating with server...");
+
+                // 2. 获取 Tokens 并发送到后端
+                const accessToken = liff.getAccessToken();
+                const idToken = liff.getIDToken();
+                const context = liff.getContext(); // 获取上下文（包含 OS, Language, Type 等）
+                
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `accessToken=${accessToken}&idToken=${idToken}`
+                });
+
+                const res = await response.json();
+                console.log("Server Response:", res);
+                
+                // 展示所有拿到的数据
+                debugPanel.style.display = 'block';
+                debugPanel.style.maxHeight = '500px';
+                debugPanel.style.overflowY = 'auto';
+                debugPanel.style.textAlign = 'left';
+                debugPanel.style.backgroundColor = '#f4f4f4';
+                debugPanel.style.padding = '15px';
+                debugPanel.style.borderRadius = '8px';
+                
+                debugPanel.innerHTML = `
+                    <h4 style="margin-top:0; color:#06C755;">--- LINE Profile (LIFF) ---</h4>
+                    <pre style="font-size:12px; background:#fff; padding:10px;">${JSON.stringify(profile, null, 2)}</pre>
+                    
+                    <h4 style="color:#06C755;">--- LIFF Context ---</h4>
+                    <pre style="font-size:12px; background:#fff; padding:10px;">${JSON.stringify(context, null, 2)}</pre>
+                    
+                    <h4 style="color:#06C755;">--- Server Response ---</h4>
+                    <pre style="font-size:12px; background:#fff; padding:10px;">${JSON.stringify(res, null, 2)}</pre>
+                    
+                    <h4 style="color:#06C755;">--- Tokens ---</h4>
+                    <p style="font-size:11px; word-break:break-all;"><strong>Access Token:</strong><br>${accessToken}</p>
+                `;
+
+                if (res.code === 1) {
+                    const data = res.data;
+                    const nickname = data.userinfo.nickname || profile.displayName;
+                    const avatar = data.userinfo.avatar || profile.pictureUrl;
+
+                    userProfile.style.display = 'block';
+                    loggedView.style.display = 'block';
+                    userGreeting.textContent = `Welcome, ${nickname}!`;
+                    if (avatar) userAvatar.style.backgroundImage = `url(${avatar})`;
+                    
+                    showStatus("Authenticated Successfully");
+                } else {
+                    showStatus("Server Auth Failed: " + res.msg, true);
+                    loginView.style.display = 'block';
+                }
+            } catch (err) {
+                showStatus("Network connection failed", true);
+                loginView.style.display = 'block';
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            liff.logout();
+            window.location.reload();
+        });
+
+        initializeLiff();
+    </script>
+</body>
+</html>

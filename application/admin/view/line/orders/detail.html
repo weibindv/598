@@ -1,0 +1,76 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>{:__('Field')}</th>
+            <th>{:__('Content')}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>订单编号</td>
+            <td>{$row.order_no}</td>
+        </tr>
+        <tr>
+            <td>用户信息</td>
+            <td>
+                <img src="{$row.user.avatar}" style="width:50px;height:50px;border-radius:50%;">
+                {$row.user.nickname} (ID: {$row.user_id})
+            </td>
+        </tr>
+        <tr>
+            <td>商品明细</td>
+            <td>{$row.goods_detail}</td>
+        </tr>
+        <tr>
+            <td>实付金额</td>
+            <td>¥{$row.paid_amount}</td>
+        </tr>
+        <tr>
+            <td>收货地址</td>
+            <td>
+                {if $row.address}
+                {$row.address.name} ({$row.address.mobile})<br>
+                {$row.address.province} {$row.address.city} {$row.address.district} {$row.address.address}
+                {else}
+                -
+                {/if}
+            </td>
+        </tr>
+        <tr>
+            <td>订单状态</td>
+            <td>{$row.order_status_text}</td>
+        </tr>
+        <tr>
+            <td>备注</td>
+            <td>{$row.remark}</td>
+        </tr>
+        <tr>
+            <td>创建时间</td>
+            <td>{:date('Y-m-d H:i:s', $row.createtime)}</td>
+        </tr>
+        {if $row.paytime}
+        <tr>
+            <td>支付时间</td>
+            <td>{:date('Y-m-d H:i:s', $row.paytime)}</td>
+        </tr>
+        {/if}
+        {if $row.delivery_time}
+        <tr>
+            <td>发货时间</td>
+            <td>{:date('Y-m-d H:i:s', $row.delivery_time)}</td>
+        </tr>
+        {/if}
+        {if $row.completetime}
+        <tr>
+            <td>完成时间</td>
+            <td>{:date('Y-m-d H:i:s', $row.completetime)}</td>
+        </tr>
+        {/if}
+        {if $row.canceltime}
+        <tr>
+            <td>取消时间</td>
+            <td>{:date('Y-m-d H:i:s', $row.canceltime)}</td>
+        </tr>
+        {/if}
+    </tbody>
+</table>

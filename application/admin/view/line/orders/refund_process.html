@@ -1,0 +1,74 @@
+<form id="refund-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="panel panel-default panel-intro">
+        <div class="panel-heading">
+            <div class="panel-lead"><em>退款申请详情</em></div>
+        </div>
+        <div class="panel-body">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td width="20%">订单编号</td>
+                        <td>{$row.order_no}</td>
+                    </tr>
+                    <tr>
+                        <td>申请用户</td>
+                        <td>
+                            <img src="{$row.user.avatar}" style="width:30px;height:30px;border-radius:50%;margin-right:5px;">
+                            {$row.user.nickname}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>订单金额</td>
+                        <td><strong class="text-danger">¥{$row.paid_amount}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>退款原因</td>
+                        <td><div class="well well-sm">{$row.refund_reason|default='未填写'}</div></td>
+                    </tr>
+                    <tr>
+                        <td>申请图片</td>
+                        <td>
+                            {if $row.refund_images}
+                                {foreach name="$row.refund_images|explode=',',###" item="vo"}
+                                    <a href="{$vo}" target="_blank"><img src="{$vo}" style="max-width:100px;max-height:100px;margin-right:5px;border:1px solid #ddd;"></a>
+                                {/foreach}
+                            {else}
+                                无
+                            {/if}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>申请时间</td>
+                        <td>{$row.refund_apply_time}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+            <div class="form-group">
+                <label class="control-label col-xs-12 col-sm-2">审核备注:</label>
+                <div class="col-xs-12 col-sm-8">
+                    <textarea id="c-admin_remark" class="form-control" name="admin_remark" rows="3" placeholder="请输入审核备注或拒绝原因"></textarea>
+                </div>
+            </div>
+            
+            <input type="hidden" name="action" id="action-input" value="">
+            <div class="form-group layer-footer">
+                <label class="control-label col-xs-12 col-sm-2"></label>
+                <div class="col-xs-12 col-sm-8">
+                    <button type="submit" class="btn btn-success btn-embossed btn-refund" data-action="agree">同意退款并原路退回</button>
+                    <button type="submit" class="btn btn-danger btn-embossed btn-refund" data-action="reject">拒绝退款申请</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    // 在表单提交前，将点击的按钮 action 赋值给隐藏域
+    document.querySelectorAll('.btn-refund').forEach(button => {
+        button.addEventListener('click', function(e) {
+            document.getElementById('action-input').value = this.getAttribute('data-action');
+        });
+    });
+</script>
