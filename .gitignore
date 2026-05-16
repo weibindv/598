@@ -4,4 +4,3 @@ thinkphp
 .DS_Store
 .idea
 runtime
-composer.lock
